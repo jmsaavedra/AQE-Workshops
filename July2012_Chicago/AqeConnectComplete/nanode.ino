@@ -4,7 +4,7 @@
 //https://github.com/jcw/ethercard
 
 //----- vars
-char website[] PROGMEM = "api.pachube.com";
+char website[] PROGMEM = "api.cosm.com";
 
 // ethernet interface mac address, must be unique on the LAN
 // add in find nanode MAC code!

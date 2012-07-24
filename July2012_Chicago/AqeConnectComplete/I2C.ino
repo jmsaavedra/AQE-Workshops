@@ -18,7 +18,7 @@ void instructSlave(byte instruction, byte parameter){
   delay(100);                             // for fun?
 }
 
-long requestSlave(){
+int requestSlave(){
   Serial.println("--- requestSlave");
   long responseVal = 0;
   int bNum = 0;                          // number of bytes received so far

@@ -23,9 +23,9 @@
 #include <EtherCard.h>
 #include <Wire.h>
 
-#define FEED    "48091" //unique feed id -- Egg feeds are below:
+#define FEED    "68860" //unique feed id -- Egg feeds are below:
 //unit01: 48091 // unit02: 48306 // unit03: 48307 // unit04: 48308 // unit05: 48309 // unit06: 48310 //
-#define APIKEY  "7HsgaVRMCZ5FOSGypykT72YyKvKSAKxQbXdIanBxeEFBYz0g"
+#define APIKEY  "_sG8TKAucC_cY02I8FIjYzkZkv-SAKxWWGZDWVh2eDlJbz0g"
 
 //timer vars
 const int transmitFrequency = 10; //time to wait between sending data in seconds
@@ -42,16 +42,18 @@ boolean debug = true;
 const int resetterPin = 3; //when pulled low, will reset board.
 
 void setup () {
-  digitalWrite(resetterPin, HIGH); //this is a hack!
+//  digitalWrite(resetterPin, HIGH); //this is a hack!
 
-  pinMode(resetterPin, OUTPUT);  
-  pinMode(buttonPin, INPUT);
+//  pinMode(resetterPin, OUTPUT);  
+//  pinMode(buttonPin, INPUT);
 
-  Serial.begin(9600); 
-  
-  ledSetup();
+  Serial.begin(57600); 
+  Serial.println("...serial.begin");
+//  ledSetup();
   nanodeSetup(); //nanode ethernet stup stuff
+  Serial.println("...nanodeSetup");  
   sensorsSetup();
+  Serial.println("...sensorsSetup");
   Wire.begin(); 
 }
 
