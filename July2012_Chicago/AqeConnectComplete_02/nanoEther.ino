@@ -2,7 +2,7 @@
 /* nanode ethernet vars and functions */
 
 //----- vars
-char website[] PROGMEM = "api.pachube.com";
+char website[] PROGMEM = "api.cosm.com";
 
 byte Ethernet::buffer[700];
 uint32_t timer;
@@ -11,7 +11,7 @@ Stash stash;
 //----- setup
 void etherSetup(){
   timer = 15; //initial wait time in seconds
-  
+
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) 
     Serial.println( "Failed to access Ethernet controller");
   if (!ether.dhcpSetup())
@@ -33,7 +33,8 @@ boolean transmitTime(){
     sendEtherData();      //send out all data!
     timer = currTime + (transmitFrequency*1000); //reset timer
     return true;
-  } else return false;
+  } 
+  else return false;
 }
 
 
@@ -41,30 +42,31 @@ boolean transmitTime(){
 void sendEtherData(){
 
   Serial.println("-----ATTEMPT SEND DATA-----");
-  Serial.print("myAnalog: ");
-  Serial.println(myAnalogVal);
-  Serial.print("myDigital: ");
-  Serial.println(myDigitalVal);
+  Serial.print("CO: ");
+  Serial.println(currCo);
+  Serial.print("NO2: ");
+  Serial.println(currNo2);
+  Serial.print("Temp: ");
+  Serial.println(currTemp);
+  Serial.print("Humidity: ");
+  Serial.println(currHumidity);
   Serial.println("---------------------------");
-
-  //create stream ID strings
-  String stream1 = unitID;
-  stream1 = stream1 + "_analog,";
-  
-  String stream2 = unitID;
-  stream2 = stream2 +"_digital," ;
 
   //byte to hold stringIDs and data
   byte sd = stash.create();
-  
-  //stash.print("analog,");
-  stash.print(stream1);
-  stash.println((word)myAnalogVal);
-  
-  //stash.print("digital,");
-  stash.print(stream2);
-  stash.println((word)myDigitalVal);
-  
+
+  stash.print("CO,");
+  stash.println((word)currCo);
+
+  stash.print("NO2,");
+  stash.println((word)currNo2);
+
+  stash.print("temperature,");
+  stash.println((word)currTemp);
+
+  stash.print("humidity,");
+  stash.println((word)currHumidity);
+
   stash.save();
 
   // generate the header with payload - note that the stash size is used,
@@ -80,5 +82,8 @@ void sendEtherData(){
   // send the packet - this also releases all stash buffers once done
   ether.tcpSend();
 }
+
+
+
 
 

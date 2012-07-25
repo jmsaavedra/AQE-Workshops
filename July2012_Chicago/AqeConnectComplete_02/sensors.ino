@@ -1,5 +1,13 @@
 
-/* sensor vars and read functions */
+/* sensor vars and read functions 
+
+***TODO: 
+  - add in the 0x22 instructions
+  - remove any differentiation between NO2 and CO (did this for time reasons, clarity)
+  - remove delays
+
+*/
+
 #include "DHT.h"
 #define DHTPIN 17 //analog pin 3
 #define DHTTYPE DHT22  
@@ -12,27 +20,25 @@ int numSensors = 0;
 void sensorsSetup(){
   //sensor value vars
   currNo2 = 1; 
-  currCo = 1; 
-  currQuality = 1; 
+  currCo = 1;
   currHumidity = 1; 
-  currTemp = 1; 
-  currButton = 1;
-Wire.begin();
-  
-    currentDevice = 0x3; // set current device on our I2C bus to talk to --ATTiny on interface shield is set to address 0x3
-  
-  //instructSlave(byte instruction, byte paramater);
-  instructSlave(0x00, 0x00); // 0x00 == count number of sensors attached; null paramater
-  numSensors = requestSlave(); // request a response to instruction
-  Serial.print("NUMBER OF ATTACHED SENSORS = ");
-  Serial.println(numSensors);
-  
-  Serial.println("\n...SETUP\n");
+  currTemp = 1;
+  Wire.begin();
+
+  currentDevice = 0x3; // set current device on our I2C bus to talk to --ATTiny on interface shield is set to address 0x3
+
+  //  instructSlave(byte instruction, byte paramater);
+  //  instructSlave(0x00, 0x00); // 0x00 == count number of sensors attached; null paramater
+  //  numSensors = requestSlave(); // request a response to instruction
+  //  Serial.print("NUMBER OF ATTACHED SENSORS = ");
+  //  Serial.println(numSensors);
 
   //begin DHT after MAC address is discovered
   Serial.println("DHT22 BEGIN");
   // DHT dht(DHTPIN, DHTTYPE);
   dht.begin(); 
+  Serial.println("\n...SETUP\n");
+
 }
 
 void readSensors(){
@@ -49,7 +55,7 @@ void readSensors(){
 }
 
 //--------- e2v gas sensors ---------
-long getNo2(){
+int getNo2(){
   Serial.println("--- getNO2()");
   int thisReading = 10;
   instructSlave(0x11, byte(0)); //0x11 == prepare current RAW sensor value; which sensor
@@ -59,7 +65,7 @@ long getNo2(){
   //Serial.println("...instructSlave");
   Serial.print("RAW SENSOR VAL = ");
   //Serial.println(thisSensorVal, HEX);
-  Serial.println(thisReading, DEC);
+  Serial.println(thisReading);
 
   //  instructSlave(0x22, 0x00); //0x22 == prepare current CALCULATED sensor value; which sensor
   //  thisReading = requestSlave();
@@ -70,7 +76,7 @@ long getNo2(){
   return thisReading;
 }
 
-long getCO(){
+int getCO(){
   int thisReading = 10;
   instructSlave(0x11, byte(1)); //0x11 == prepare current RAW sensor value; which sensor
   delay(250);
@@ -89,9 +95,9 @@ long getCO(){
 }
 
 
-//--------- DHT22 humidity sensor ---------
+//--------- DHT22 humidity ---------
 int getHumidity(){
-  int thisReading = 13;
+  int thisReading = 0;
 
   float h = dht.readHumidity();
 
@@ -105,7 +111,7 @@ int getHumidity(){
   return thisReading;
 }
 
-//--------- DHT22 temperature sensor ---------
+//--------- DHT22 temperature ---------
 int getTemperature(){
   int thisReading = 0;
 
@@ -119,36 +125,3 @@ int getTemperature(){
     return thisReading;
   }
 }
-
-
-void instructSlave(byte instruction, byte parameter){
-  Serial.print("--- instructSlave: (0x");
-  Serial.print(instruction, HEX);
-  Serial.print(", 0x");
-  Serial.print(parameter, HEX);
-  Serial.println(")");
-  Wire.beginTransmission(0x3); // transmit to device #44 (0x2c)
-  //Serial.println("--- wire.beginTransmission");
-  Wire.write(instruction);         // sends instruction byte  0x00 = give me number of connected sensors
-  //Serial.println("--- wire.write instruction");
-  Wire.write(parameter);                 // null parameter
-  //Serial.println("--- wire.write paramater");
-  Wire.endTransmission(true);  // stop transmitting            
-  //Serial.println("--- wire.endTransmission");
-  delay(100);                             // for fun?
-}
-
-int requestSlave(){
-  Serial.println("--- requestSlave");
-  long responseVal = 0;
-  int bNum = 0;                          // number of bytes received so far
-  Wire.requestFrom(0x3, 4);    // request 4 bytes from slave device #44
-
-    while(Wire.available()){
-    char c = Wire.read();
-    //Serial.println(c);
-    responseVal = c;
-  }
-  return responseVal; 
-}
-
