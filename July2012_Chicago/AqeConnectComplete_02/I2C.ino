@@ -1,10 +1,10 @@
 
 /* I2C functions 
-
-TODO: 
-  - un-hardcode the device number (right now set to device 3)
-  - FIX REQUEST SLAVE baaahhh :-(
-*/
+ 
+ TODO: 
+ - un-hardcode the device number (right now set to device 3)
+ - FIX REQUEST SLAVE baaahhh :-(
+ */
 
 void instructSlave(byte instruction, byte parameter){
   Serial.print("--- instructSlave: (0x");
@@ -31,10 +31,12 @@ long requestSlave(){
   uint16_t r;
   while(Wire.available()){
     r = Wire.read();
-    responseVal = r << 8;   //aaaaahhhhhhhhh whyyyy
-    responseVal += r;    
+    responseVal += r; 
+    responseVal = responseVal << 8;   //aaaaahhhhhhhhh whyyyy
+
     //Serial.print("VALUE IN DEC: ");
-    //Serial.println(c, DEC);
+    //Serial.println(r, DEC);
   }
   return responseVal; 
 }
+
